@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'barchartpainter.dart';
 
 class BarChart extends StatelessWidget {
-  final double chartWidth = 400.0;
-  final double chartHeight = 200.0;
+  final double chartWidth = 300.0;
+  final double chartHeight = 100.0;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class BarChart extends StatelessWidget {
                 painter: BarChartPainter(
                   width: this.chartWidth, 
                   height: this.chartHeight,
-                  padding: 20.0
+                  padding: 10.0
                 )
               )
             )

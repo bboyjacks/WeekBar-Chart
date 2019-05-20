@@ -22,28 +22,30 @@ class BarChartPainter extends CustomPainter {
     return (1 - (n + 1) * this.barSpacing) / n;
   }
 
-  List<double> getXCoordinates(n) {
+  List<double> getXUnitCoordinates(data) {
+    var n = data.length;
     List<double> result = [];
     var barWidth = getB(n);
     for (int i = 0; i < n; i++) {
       double vStart = this.barSpacing * (i + 1) + barWidth * i;
-      double vEnd = vStart + barWidth;
       result.add(vStart);
-      result.add(vEnd);
     }
+    return result;
+  }
 
-    List<double> scaledResult = [];
-    result.forEach((x){
-      scaledResult.add(Utils.map(x, 0, 1, this.padding, this.width - this.padding));
+  List<double> getYUnitCoordinates(data) {
+    List<double> result = [];
+    double maxData = Utils.max(data);
+    data.forEach((y){
+      result.add(1 - Utils.map(y, 0, maxData, 0, 1));
     });
-    return scaledResult;
+    return result;
   }
 
 
   /*
   * Drawing related methods
   */
-
   void paintXAxisLine(Canvas canvas) {
     canvas.drawLine(
       Offset(
@@ -74,16 +76,33 @@ class BarChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     paintXAxisLine(canvas);
     paintYAxisLine(canvas);
+    List<double> data = [30.0, 40.0, 50.0, 70.0, 25.0, 50.0, 45];
+    var xUnits = getXUnitCoordinates(data);
+    var yUnits = getYUnitCoordinates(data);
+    var barUnitWidth = getB(data.length);
+    var xMin = this.padding;
+    var xMax = this.width - this.padding;
+    var yMin = this.padding;
+    var yMax = this.height - this.padding;
 
-    List<double> result = getXCoordinates(31);
-    for (int i = 0; i < result.length - 1; i += 2) {
-      var start = Offset(result[i], this.height - this.padding);
-      var end = Offset(result[i+1], this.height - this.padding);
-      var paint = Paint()
-                  ..color = Colors.red
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = 5.0;
-      canvas.drawLine(start, end, paint);
+    var barHeights = yUnits.map((y) => 1 - y).toList();
+
+    for (int i = 0; i < xUnits.length; i++) {
+      var offSet1 = Offset(
+        Utils.map(xUnits[i], 0, 1, xMin, xMax),
+        Utils.map(yUnits[i], 0, 1, yMin, yMax)
+      );
+
+      var offSet2 = Offset(
+        Utils.map(xUnits[i] + barUnitWidth, 0, 1, xMin, xMax),
+        Utils.map(yUnits[i] + barHeights[i], 0, 1, yMin, yMax)
+      );
+
+      canvas.drawRect(
+        Rect.fromPoints(offSet1, offSet2),
+        Paint()
+          ..color = Colors.red
+      );
     }
   }
 
