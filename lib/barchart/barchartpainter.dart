@@ -1,19 +1,47 @@
 import 'package:flutter/material.dart';
+import 'minmaxrange.dart';
 import '../utils.dart';
 
 class BarChartPainter extends CustomPainter {
-  final double width;
-  final double height;
-  final double padding;
   final double barSpacing;
+  final Color color;
+  final List<double> data;
+  final double height;
+  final List<String> xLabels;
+  final double padding;
+  final double width;
+  List<double> xUnits;
+  List<double> yUnits;
+  double barUnitWidth;
+  MinMaxRange minMaxRange;
+
   BarChartPainter(
     {
+      
+      @required this.data,
+      @required this.xLabels,
       @required this.width, 
       @required this.height,
+      this.barSpacing = 0.03,
+      this.color = Colors.red,
       this.padding = 10.0,
-      this.barSpacing = 0.01
     }
-  );
+  ) {
+    assert(this.data.length == this.xLabels.length);
+    this.xLabels.forEach((label){
+      assert(label.length < 15);
+    });
+    this.minMaxRange = MinMaxRange(
+      height: this.height, 
+      width: this.width,
+      xLabelExist: true,
+      yLabelExist: true
+      );
+
+    this.xUnits = getXUnitCoordinates(this.data);
+    this.yUnits = getYUnitCoordinates(this.data);
+    this.barUnitWidth = getB(this.data.length);
+  }
 
   // Calculates proper bar unit width based on n
   double getB(n) {
@@ -49,11 +77,11 @@ class BarChartPainter extends CustomPainter {
   void paintXAxisLine(Canvas canvas) {
     canvas.drawLine(
       Offset(
-        this.padding,
-        this.height - this.padding),
+        this.minMaxRange.origin["x"],
+        this.minMaxRange.origin["y"]),
       Offset(
-        this.width - this.padding, 
-        this.height - this.padding),
+        this.minMaxRange.xMax["x"], 
+        this.minMaxRange.xMax["y"]),
       Paint()..color = Colors.black
     );
   }
@@ -61,49 +89,46 @@ class BarChartPainter extends CustomPainter {
   void paintYAxisLine(Canvas canvas) {
     canvas.drawLine(
       Offset(
-        this.padding,
-        this.padding
+        this.minMaxRange.yMax["x"],
+        this.minMaxRange.yMax["y"]
       ),
       Offset(
-        this.padding,
-        this.height - this.padding
+        this.minMaxRange.origin["x"],
+        this.minMaxRange.origin["y"]
       ),
       Paint()..color = Colors.black
     );
+  }
+
+  void paintBars(Canvas canvas) {
+
+
+    var barHeights = yUnits.map((y) => 1 - y).toList();
+
+    for (int i = 0; i < xUnits.length; i++) {
+      var offSet1 = Offset(
+        Utils.map(this.xUnits[i], 0, 1, this.minMaxRange.origin["x"], this.minMaxRange.xMax["x"]),
+        Utils.map(this.yUnits[i], 0, 1, this.minMaxRange.yMax["y"], this.minMaxRange.origin["y"])
+      );
+
+      var offSet2 = Offset(
+        Utils.map(this.xUnits[i] + this.barUnitWidth, 0, 1, this.minMaxRange.origin["x"], this.minMaxRange.xMax["x"]),
+        Utils.map(this.yUnits[i] + barHeights[i], 0, 1, this.minMaxRange.yMax["y"], this.minMaxRange.origin["y"])
+      );
+
+      canvas.drawRect(
+        Rect.fromPoints(offSet1, offSet2),
+        Paint()
+          ..color = this.color
+      );
+    }
   }
 
   @override
   void paint(Canvas canvas, Size size) {
     paintXAxisLine(canvas);
     paintYAxisLine(canvas);
-    List<double> data = [30.0, 40.0, 50.0, 70.0, 25.0, 50.0, 45];
-    var xUnits = getXUnitCoordinates(data);
-    var yUnits = getYUnitCoordinates(data);
-    var barUnitWidth = getB(data.length);
-    var xMin = this.padding;
-    var xMax = this.width - this.padding;
-    var yMin = this.padding;
-    var yMax = this.height - this.padding;
-
-    var barHeights = yUnits.map((y) => 1 - y).toList();
-
-    for (int i = 0; i < xUnits.length; i++) {
-      var offSet1 = Offset(
-        Utils.map(xUnits[i], 0, 1, xMin, xMax),
-        Utils.map(yUnits[i], 0, 1, yMin, yMax)
-      );
-
-      var offSet2 = Offset(
-        Utils.map(xUnits[i] + barUnitWidth, 0, 1, xMin, xMax),
-        Utils.map(yUnits[i] + barHeights[i], 0, 1, yMin, yMax)
-      );
-
-      canvas.drawRect(
-        Rect.fromPoints(offSet1, offSet2),
-        Paint()
-          ..color = Colors.red
-      );
-    }
+    paintBars(canvas);
   }
 
   @override
