@@ -7,7 +7,7 @@ class UnitBar {
   final double unitGap;
 
   double get width {
-    return (1 - unitGap * (n + 1)) / n;
+    return ((1 - unitGap * (n + 1)) / n);
   }
 }
 
@@ -24,25 +24,29 @@ double getMax(List<double> data) {
 class BarChartPainter extends CustomPainter {
 
   BarChartPainter({
-    this.data
-  });
+    this.data,
+    Animation<double> tween
+  }) : tween = tween, super(repaint: tween);
   final List<double> data;
-  final double gap = 0.05;
+  final double gap = 0.1;
+  Animation<double> tween;
+ 
+  double lerp(double min, double max, double percent) {
+    return (max - min) * percent;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
     double barWidth = UnitBar(data.length.toDouble(), gap).width;
-    double maxVal = getMax(data);
     double unitX = 0.0;
+    double maxVal = getMax(data);
     for (int i = 0; i < data.length; i++) {
-      double unitY = utils.map(data[i], 0, maxVal, 0, 1);
+      double unitY = utils.map(data[i], 0, maxVal, 0, 1) * tween.value;
       unitX = gap + ((barWidth + gap) * i);
       double startX = utils.map(unitX, 0, 1, 0, size.width);
       double startY = utils.map(1, 0, 1, 0, size.height);
       double endX = utils.map(unitX + barWidth, 0, 1, 0, size.width);
       double endY = utils.map(1 - unitY, 0, 1, 0, size.height);
-      print({"start": {startX, startY}});
-      print({"end": {endX, endY}});
       canvas.drawRect(
         Rect.fromPoints(Offset(startX, startY), Offset(endX, endY)),
         Paint()..color = Colors.red

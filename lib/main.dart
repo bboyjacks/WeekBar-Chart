@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           child: Center(
             child: DebugContainer(
               child: BarChart(
-                data: [50, 40, 70, 60]
+                data: [50, 40, 70, 60, 60, 45]
               )
             )
           )
