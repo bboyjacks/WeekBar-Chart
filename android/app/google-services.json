@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "659082155058",
+    "firebase_url": "https://mlplay-65303.firebaseio.com",
+    "project_id": "mlplay-65303",
+    "storage_bucket": "mlplay-65303.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659082155058:android:d96dacb4ce5ba268",
+        "android_client_info": {
+          "package_name": "flutter.google.signin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659082155058-clt4m9vsidvaeja82nn0cfr8mj79tv83.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBlLe1sI07zk4wES3MKLHa6so13a8xEvQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659082155058-clt4m9vsidvaeja82nn0cfr8mj79tv83.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

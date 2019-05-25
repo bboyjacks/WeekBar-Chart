@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
-import 'barchart.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-void main() => runApp(MyApp());
+void main() =>
+  runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<FirebaseUser> _handleSignIn() async {
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    FirebaseUser user = await _auth.signInWithGoogle(
+      idToken: googleAuth.idToken,
+      accessToken: googleAuth.accessToken
+    );
+
+    print('Hello: ${user.email}');
+    return user;
+  }
+
+  void _signOut() {
+    _auth.signOut();
+  }
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext conext) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -18,14 +39,22 @@ class MyApp extends StatelessWidget {
         ),
         body: SafeArea(
           child: Center(
-            child: DebugContainer(
-              child: BarChart(
-                data: [50, 40, 70, 60, 60, 45]
-              )
+            child: Column(
+              children: [
+                RaisedButton(
+                  onPressed: _handleSignIn,
+                  child: Text("Sign in")
+                ),
+                SizedBox(height: 20.0, width: 20,),
+                RaisedButton(
+                  onPressed: _signOut,
+                  child: Text("Sign out")
+                )
+              ]
             )
-          )
+          ),
         ),
-      ),
+      )
     );
   }
 }
