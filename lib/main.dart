@@ -1,9 +1,31 @@
 import 'package:flutter/material.dart';
-import 'barchart.dart';
+import 'multiseriesbarchart.dart';
+import 'dataseries.dart';
+import 'debugcontainer.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  
+  final DataSeries dataSeries1 = DataSeries(
+    m: 30,
+    t: 40,
+    w: 50,
+    th: 43,
+    f: 89,
+    s: 90,
+    sd: 74
+  );
+
+  final DataSeries dataSeries2 = DataSeries(
+    m: 30,
+    t: 30,
+    w: 45,
+    th: 49,
+    f: 80,
+    s: 95,
+    sd: 76 
+  );
   
   @override
   Widget build(BuildContext context) {
@@ -19,31 +41,16 @@ class MyApp extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: DebugContainer(
-              child: BarChart(
-                data: [50, 40, 70, 60, 60, 45]
+              child: MultiSeriesBarChart(
+                dataSeries: [
+                  dataSeries1,
+                  dataSeries2
+                ]
               )
             )
           )
         ),
       ),
-    );
-  }
-}
-
-class DebugContainer extends StatelessWidget {
-  DebugContainer({this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.red,
-          width: 1.0
-        )
-      ),
-      child: child
     );
   }
 }
