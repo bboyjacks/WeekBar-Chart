@@ -24,6 +24,7 @@ class _BarChartState extends State<BarChart> with SingleTickerProviderStateMixin
   @override
   void dispose() {
     animationController.dispose();
+    super.dispose();
   }
 
   @override
