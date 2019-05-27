@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dataserieslist.dart';
 import 'multiseriesbarchartcanvas.dart';
-import 'debugcontainer.dart';
 
 class MultiSeriesBarChart extends StatefulWidget {
   MultiSeriesBarChart({this.dataSeriesList});
