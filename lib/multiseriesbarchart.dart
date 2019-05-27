@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dataserieslist.dart';
-import 'multiseriesbarchartpainter.dart';
+import 'multiseriesbarchartcanvas.dart';
+import 'debugcontainer.dart';
 
 class MultiSeriesBarChart extends StatefulWidget {
   MultiSeriesBarChart({this.dataSeriesList});
@@ -37,17 +38,68 @@ class _MultiSeriesBarChartState extends State<MultiSeriesBarChart> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      child: SizedBox(
-        width: widget.width,
-        child: CustomPaint(
-          painter: MultiSeriesBarChartPainter(
-            animation.animate(animationController),
-            unitDataSeries: widget.dataSeriesList.unitize()
+    return Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(30),
+            child: MultiSeriesBarChartCanvas(
+                width: widget.width,
+                height: widget.height,
+                animation: animation.animate(animationController),
+                dataSeriesList: widget.dataSeriesList.unitize(),
+            )
           ),
-          size: Size(widget.width, widget.height),
-        )
-      )
+          BarLabel(left: 38, top: 190, text: "MON",),
+          BarLabel(left: 87, top: 190, text: "TUE",),
+          BarLabel(left: 135, top: 190, text: "WED",),
+          BarLabel(left: 185, top: 190, text: "THU",),
+          BarLabel(left: 235, top: 190, text: "FRI",),
+          BarLabel(left: 283, top: 190, text: "SAT",),
+          BarLabel(left: 333, top: 190, text: "SUN",)
+        ],
+      );
+  }
+}
+
+class BarLabel extends StatelessWidget {
+  BarLabel({
+    this.top,
+    this.left,
+    this.text
+  });
+  final double top;
+  final double left;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+            top: top,
+            left: left,
+            child: CenteredText(text: text, width: 40.0, height: 30.0,)
+    );
+  }
+}
+
+class CenteredText extends StatelessWidget {
+  CenteredText(
+    {
+      this.text,
+      this.width, 
+      this.height
+    }
+  );
+  final String text;
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      width: width,
+      height: height,
+      child: Text(text)
     );
   }
 }
