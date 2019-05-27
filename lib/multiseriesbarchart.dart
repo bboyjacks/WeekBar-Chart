@@ -21,7 +21,7 @@ class _MultiSeriesBarChartState extends State<MultiSeriesBarChart> with SingleTi
   @override
   void initState() {
     animationController = AnimationController(
-      duration: Duration(milliseconds: 10000),
+      duration: Duration(milliseconds: 1000),
       vsync: this
     );
 
@@ -38,7 +38,8 @@ class _MultiSeriesBarChartState extends State<MultiSeriesBarChart> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return FittedBox(
+      child: Stack(
         children: [
           Padding(
             padding: EdgeInsets.all(30),
@@ -49,15 +50,16 @@ class _MultiSeriesBarChartState extends State<MultiSeriesBarChart> with SingleTi
                 dataSeriesList: widget.dataSeriesList.unitize(),
             )
           ),
-          BarLabel(left: 38, top: 190, text: "MON",),
-          BarLabel(left: 87, top: 190, text: "TUE",),
-          BarLabel(left: 135, top: 190, text: "WED",),
-          BarLabel(left: 185, top: 190, text: "THU",),
-          BarLabel(left: 235, top: 190, text: "FRI",),
-          BarLabel(left: 283, top: 190, text: "SAT",),
-          BarLabel(left: 333, top: 190, text: "SUN",)
+          BarLabel(left: 40, top: 230, text: "M",),
+          BarLabel(left: 100, top: 230, text: "T",),
+          BarLabel(left: 160, top: 230, text: "W",),
+          BarLabel(left: 220, top: 230, text: "T",),
+          BarLabel(left: 280, top: 230, text: "F",),
+          BarLabel(left: 340, top: 230, text: "S",),
+          BarLabel(left: 400, top: 230, text: "S",)
         ],
-      );
+      )
+    );
   }
 }
 
@@ -74,9 +76,9 @@ class BarLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-            top: top,
-            left: left,
-            child: CenteredText(text: text, width: 40.0, height: 30.0,)
+      top: top,
+      left: left,
+      child: CenteredText(text: text, width: 50.0, height: 30.0,)
     );
   }
 }

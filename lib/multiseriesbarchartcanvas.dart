@@ -18,8 +18,7 @@ class MultiSeriesBarChartCanvas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      child: SizedBox(
+    return SizedBox(
         width: width,
         child: CustomPaint(
           painter: MultiSeriesBarChartPainter(
@@ -28,7 +27,6 @@ class MultiSeriesBarChartCanvas extends StatelessWidget {
           ),
           size: Size(width, height),
         )
-      )
     );
   }
 }
