@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'multiseriesbarchart.dart';
 import 'dataseries.dart';
 import 'debugcontainer.dart';
+import 'dataserieslist.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,6 +27,26 @@ class MyApp extends StatelessWidget {
     s: 95,
     sd: 76 
   );
+
+  final DataSeries dataSeries3 = DataSeries(
+    m: 30,
+    t: 30,
+    w: 45,
+    th: 49,
+    f: 80,
+    s: 95,
+    sd: 76 
+  );
+
+  final DataSeries dataSeries4 = DataSeries(
+    m: 30,
+    t: 30,
+    w: 12,
+    th: 49,
+    f: 80,
+    s: 45,
+    sd: 76 
+  );
   
   @override
   Widget build(BuildContext context) {
@@ -40,13 +61,23 @@ class MyApp extends StatelessWidget {
         ),
         body: SafeArea(
           child: Center(
-            child: DebugContainer(
-              child: MultiSeriesBarChart(
-                dataSeries: [
-                  dataSeries1,
-                  dataSeries2
-                ]
-              )
+            child: Row(
+              children: [
+                Flexible(
+                  child: DebugContainer(
+                    child: MultiSeriesBarChart(
+                      dataSeriesList: DataSeriesList(
+                        dataSeriesList: [
+                          dataSeries1,
+                          dataSeries2,
+                          dataSeries3,
+                          dataSeries4
+                        ]
+                      ),
+                    )
+                  )
+                ),
+              ]
             )
           )
         ),
