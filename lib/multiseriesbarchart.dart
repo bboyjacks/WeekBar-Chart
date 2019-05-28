@@ -40,14 +40,11 @@ class _MultiSeriesBarChartState extends State<MultiSeriesBarChart> with SingleTi
     return FittedBox(
       child: Stack(
         children: [
-          Padding(
-            padding: EdgeInsets.all(30),
-            child: MultiSeriesBarChartCanvas(
-                width: widget.width,
-                height: widget.height,
-                animation: animation.animate(animationController),
-                dataSeriesList: widget.dataSeriesList.unitize(),
-            )
+          MultiSeriesBarChartCanvas(
+            width: widget.width,
+            height: widget.height,
+            animation: animation.animate(animationController),
+            dataSeriesList: widget.dataSeriesList.unitize(),
           ),
           BarLabel(left: 40, top: 230, text: "M",),
           BarLabel(left: 100, top: 230, text: "T",),
@@ -100,7 +97,11 @@ class CenteredText extends StatelessWidget {
       alignment: Alignment.center,
       width: width,
       height: height,
-      child: Text(text)
+      child: Text(text,
+        style: TextStyle(
+          fontWeight: FontWeight.bold
+        ),
+      )
     );
   }
 }

@@ -82,10 +82,19 @@ class SeriesColumnPainter {
       double startY = map(1 - unitSeries[i], 0, 1, 0, height);
       double endX = barWidth * (i + 1) + offSet;
       double endY = height;
-      canvas.drawRect(
-        Rect.fromPoints(Offset(startX, startY), Offset(endX, endY)), 
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromPoints(
+            Offset(startX, startY),
+            Offset(endX, endY)), 
+          Radius.circular(10))
+        , 
         Paint()..color = colors[i]
       );
+      // canvas.drawRect(
+      //   Rect.fromPoints(Offset(startX, startY), Offset(endX, endY)), 
+      //   Paint()..color = colors[i]
+      // );
     }
   }
 }
