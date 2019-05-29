@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "782849730958",
+    "firebase_url": "https://sign-in-46ee0.firebaseio.com",
+    "project_id": "sign-in-46ee0",
+    "storage_bucket": "sign-in-46ee0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782849730958:android:7aa61cbdea86afa3",
+        "android_client_info": {
+          "package_name": "com.example.barchart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782849730958-0s1c0g7s0o8cg6dfr14o04j4hi9dabme.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe1r25RKG6CEnetzx-TKaQ2jqZgPK0VEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782849730958-0s1c0g7s0o8cg6dfr14o04j4hi9dabme.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "782849730958-ihms1492noh2bpckaj01nlv2ojclj6h3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.barchart"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

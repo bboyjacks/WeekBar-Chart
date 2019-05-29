@@ -1,53 +1,53 @@
 import 'package:flutter/material.dart';
-import 'multiseriesbarchart.dart';
-import 'dataseries.dart';
-import 'debugcontainer.dart';
-import 'dataserieslist.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/calendar/v3.dart' as calendar;
+
+import 'package:http/http.dart'
+    show BaseRequest, Response, StreamedResponse;
+import 'package:http/io_client.dart';
+
+class GoogleHttpClient extends IOClient {
+  Map<String, String> _headers;
+
+  GoogleHttpClient(this._headers) : super();
+
+  @override
+  Future<StreamedResponse> send(BaseRequest request) =>
+      super.send(request..headers.addAll(_headers));
+
+  @override
+  Future<Response> head(Object url, {Map<String, String> headers}) =>
+      super.head(url, headers: headers..addAll(_headers));
+
+}
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  
-  final DataSeries dataSeries1 = DataSeries(
-    m: 30,
-    t: 40,
-    w: 50,
-    th: 43,
-    f: 89,
-    s: 90,
-    sd: 74
+  final _googleSignInObject = new GoogleSignIn(
+    scopes: [
+      calendar.CalendarApi.CalendarReadonlyScope
+    ]
   );
 
-  final DataSeries dataSeries2 = DataSeries(
-    m: 30,
-    t: 30,
-    w: 45,
-    th: 49,
-    f: 80,
-    s: 95,
-    sd: 76 
-  );
+  void _googleSignIn() async {
+    await _googleSignInObject.signIn();
+    final authHeaders = await _googleSignInObject.currentUser.authHeaders;
+    final googleClient = GoogleHttpClient(authHeaders);
+    calendar.CalendarApi(googleClient).calendarList.list(maxResults: 10).then(
+      (onvalue) {
+        onvalue.items.forEach((item){
+          print(item.toJson());
+        });
+      }
+    );
+  }
 
-  final DataSeries dataSeries3 = DataSeries(
-    m: 30,
-    t: 30,
-    w: 45,
-    th: 49,
-    f: 80,
-    s: 95,
-    sd: 76 
-  );
+  void _googleSignOut() {
+    print("Signed out");
+    _googleSignInObject.signOut();
+  }
 
-  final DataSeries dataSeries4 = DataSeries(
-    m: 30,
-    t: 30,
-    w: 12,
-    th: 49,
-    f: 80,
-    s: 45,
-    sd: 76 
-  );
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,24 +60,20 @@ class MyApp extends StatelessWidget {
           title: Text("Bar Chart"),
         ),
         body: SafeArea(
-          child: Center(
-            child: Row(
-              children: [
-                Flexible(
-                  child: DebugContainer(
-                    child: MultiSeriesBarChart(
-                      dataSeriesList: DataSeriesList(
-                        dataSeriesList: [
-                          dataSeries1,
-                          dataSeries2,
-                          dataSeries3,
-                          dataSeries4
-                        ]
-                      ),
-                    )
+          child: SizedBox.expand( 
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RaisedButton(
+                    onPressed: _googleSignIn,
+                    child: Text("sign in")
+                  ),
+                  SizedBox(height: 10, width: 20,),
+                  RaisedButton(
+                    onPressed: _googleSignOut,
+                    child: Text("sign out")
                   )
-                )
-              ]
+                ]
             )
           )
         ),
