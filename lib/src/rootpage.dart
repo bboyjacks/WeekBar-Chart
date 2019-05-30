@@ -22,6 +22,8 @@ class _RootPageState extends State<RootPage> {
     final currentUser = AuthProvider.of(context).auth.currentUser();
     if (currentUser == null) {
       signOut();
+    } else {
+      signIn();
     }
     super.didChangeDependencies();
   }

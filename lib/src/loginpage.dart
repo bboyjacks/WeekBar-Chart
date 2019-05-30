@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'authprovider.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({this.signInCallback});
   final VoidCallback signInCallback;
+
+  void _login(BuildContext context) {
+    final auth = AuthProvider.of(context).auth;
+    auth.signIn();
+    if (auth.currentUser() != null) {
+      signInCallback();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +19,9 @@ class LoginPage extends StatelessWidget {
       child: Container(
         child: RaisedButton(
           child: Text("Log in"),
-          onPressed: signInCallback,
+          onPressed: (){
+            _login(context);
+          },
         )
       )
     );
