@@ -25,6 +25,7 @@ class GoogleHttpClient extends IOClient {
 
 class Auth implements BaseAuth {
   GoogleSignIn signedInUser;
+  GoogleSignInAccount currentSignedInAccount;
   final scopes = [
     calendar.CalendarApi.CalendarEventsReadonlyScope,
     calendar.CalendarApi.CalendarReadonlyScope
@@ -32,13 +33,14 @@ class Auth implements BaseAuth {
 
   @override
   GoogleSignInAccount currentUser() {
-    return signedInUser?.currentUser;
+    print("current user ${signedInUser?.currentUser}");
+    return currentSignedInAccount;
   }
 
   @override
   void signIn() async {
     signedInUser = GoogleSignIn(scopes: scopes);
-    await signedInUser.signIn();
+    currentSignedInAccount = await signedInUser.signIn();
   }
 
   @override

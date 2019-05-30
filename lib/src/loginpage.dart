@@ -8,7 +8,9 @@ class LoginPage extends StatelessWidget {
   void _login(BuildContext context) {
     final auth = AuthProvider.of(context).auth;
     auth.signIn();
+    print("login in");
     if (auth.currentUser() != null) {
+      print("Logged in");
       signInCallback();
     }
   }
