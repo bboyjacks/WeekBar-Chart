@@ -26,7 +26,8 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   final _googleSignInObject = new GoogleSignIn(
     scopes: [
-      calendar.CalendarApi.CalendarReadonlyScope
+      calendar.CalendarApi.CalendarReadonlyScope,
+      calendar.CalendarApi.CalendarEventsReadonlyScope
     ]
   );
 
@@ -34,13 +35,13 @@ class MyApp extends StatelessWidget {
     await _googleSignInObject.signIn();
     final authHeaders = await _googleSignInObject.currentUser.authHeaders;
     final googleClient = GoogleHttpClient(authHeaders);
-    calendar.CalendarApi(googleClient).calendarList.list(maxResults: 10).then(
-      (onvalue) {
-        onvalue.items.forEach((item){
-          print(item.toJson());
-        });
-      }
-    );
+    final calendarApi = calendar.CalendarApi(googleClient);
+    final calendarList = await calendarApi.calendarList.list(maxResults: 10);
+    calendarList.items.forEach((item){
+      calendarApi.events.list(item.id, timeMin: DateTime(2018)).then((f){
+        print(f.description);
+      });
+    });
   }
 
   void _googleSignOut() {
