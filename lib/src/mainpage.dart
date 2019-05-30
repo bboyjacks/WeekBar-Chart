@@ -7,9 +7,12 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: RaisedButton(
-        child: Text("Main Page")
+    return Center(
+      child: Container(
+        child: RaisedButton(
+          child: Text("Sign out"),
+          onPressed: signOutCallback,
+        )
       )
     );
   }

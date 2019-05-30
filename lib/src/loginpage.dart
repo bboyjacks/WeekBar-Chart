@@ -6,9 +6,12 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: RaisedButton(
-        child: Text("Login Paige")
+    return Center(
+      child: Container(
+        child: RaisedButton(
+          child: Text("Log in"),
+          onPressed: signInCallback,
+        )
       )
     );
   }

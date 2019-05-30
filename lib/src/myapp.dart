@@ -9,9 +9,8 @@ class MyApp extends StatelessWidget {
     return AuthProvider(
       auth: Auth(),
       child: MaterialApp(
-        home: Container(
-          color: Colors.blue[400],
-          child: RootPage()
+        home: Scaffold(
+          body: RootPage()
         )
       )
     );

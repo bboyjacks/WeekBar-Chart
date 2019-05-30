@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
 import 'mainpage.dart';
+import 'authprovider.dart';
 
 enum AuthState {
   notDetermined,
@@ -18,6 +19,10 @@ class _RootPageState extends State<RootPage> {
 
   @override
   void didChangeDependencies() {
+    final currentUser = AuthProvider.of(context).auth.currentUser();
+    if (currentUser == null) {
+      signOut();
+    }
     super.didChangeDependencies();
   }
 
