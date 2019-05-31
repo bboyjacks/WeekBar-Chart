@@ -3,6 +3,8 @@ import 'package:http/http.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import '../barchart/dataserieslist.dart';
+import 'daterange.dart';
 
 abstract class BaseAuth {
   void signIn([VoidCallback signInCallback(GoogleSignInAccount currentUser)]);
@@ -52,5 +54,11 @@ class Auth implements BaseAuth {
       signOutCallback();
     });
   }
+}
 
+class GoogleCalendarApi {
+  static DataSeriesList getEventsByDateRange(DateRange dateRange)  {
+    print("queried api");
+    return DataSeriesList();
+  }
 }

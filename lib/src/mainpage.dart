@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'authprovider.dart';
-
+import 'daterange.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({this.signOutCallback});
@@ -8,9 +8,9 @@ class MainPage extends StatelessWidget {
 
   void _signOut(BuildContext context) {
     final auth = AuthProvider.of(context).auth;
-    auth.signOut((){ 
+    auth.signOut(() {
       Navigator.pop(context);
-      signOutCallback(); 
+      signOutCallback();
     });
   }
 
@@ -21,13 +21,23 @@ class MainPage extends StatelessWidget {
         title: Text("Main Page"),
       ),
       drawer: Drawer(
-        child: FlatButton(
-          child: Text("Sign out"),
-          onPressed: (){_signOut(context);},
-        )
-      ),
-      body: Container()
+          child: FlatButton(
+        child: Text("Sign out"),
+        onPressed: () {
+          _signOut(context);
+        },
+      )),
+      body: Container(),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          final appBloc = AuthProvider.of(context).appBloc;
+          appBloc.calendarEventsStreamSink.add(DateRange(
+            start: DateTime(2018).toUtc(), 
+            end: DateTime.now().toUtc()
+          )
+        );
+      }),
     );
   }
-
 }
