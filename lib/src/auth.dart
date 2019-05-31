@@ -34,7 +34,6 @@ class Auth implements BaseAuth {
 
   @override
   GoogleSignInAccount currentUser() {
-    print("current user ${signedInUser?.currentUser}");
     return currentSignedInAccount;
   }
 
@@ -43,7 +42,6 @@ class Auth implements BaseAuth {
     signedInUser = GoogleSignIn(scopes: scopes);
     signedInUser.signIn().then((user){ 
       currentSignedInAccount = user;
-      print(currentSignedInAccount);
       signInCallback(currentSignedInAccount);
     });
   }
@@ -51,7 +49,6 @@ class Auth implements BaseAuth {
   @override
   void signOut(VoidCallback signOutCallback) {
     signedInUser.signOut().then((user){
-      print("sign out");
       signOutCallback();
     });
   }

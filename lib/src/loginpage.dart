@@ -14,13 +14,15 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        child: RaisedButton(
-          child: Text("Log in"),
-          onPressed: (){
-            _login(context);
-          },
+    return Scaffold(
+      body: Center(
+        child: Container(
+          child: RaisedButton(
+            child: Text("Log in"),
+            onPressed: (){
+              _login(context);
+            },
+          )
         )
       )
     );
