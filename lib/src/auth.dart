@@ -2,10 +2,11 @@ import 'package:http/io_client.dart';
 import 'package:http/http.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
 
 abstract class BaseAuth {
-  void signIn();
-  void signOut();
+  void signIn([VoidCallback signInCallback(GoogleSignInAccount currentUser)]);
+  void signOut(VoidCallback signOutCallback);
   GoogleSignInAccount currentUser(); 
 }
 
@@ -38,14 +39,21 @@ class Auth implements BaseAuth {
   }
 
   @override
-  void signIn() async {
+  void signIn([VoidCallback signInCallback(GoogleSignInAccount currentUser)]) async {
     signedInUser = GoogleSignIn(scopes: scopes);
-    currentSignedInAccount = await signedInUser.signIn();
+    signedInUser.signIn().then((user){ 
+      currentSignedInAccount = user;
+      print(currentSignedInAccount);
+      signInCallback(currentSignedInAccount);
+    });
   }
 
   @override
-  void signOut() {
-    signedInUser.signOut();
+  void signOut(VoidCallback signOutCallback) {
+    signedInUser.signOut().then((user){
+      print("sign out");
+      signOutCallback();
+    });
   }
 
 }
