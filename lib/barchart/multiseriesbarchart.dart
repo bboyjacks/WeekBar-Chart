@@ -4,7 +4,10 @@ import 'multiseriesbarchartcanvas.dart';
 
 class MultiSeriesBarChart extends StatefulWidget {
   MultiSeriesBarChart({this.dataSeriesList});
-  final DataSeriesList dataSeriesList;
+  final DataSeriesList dataSeriesList; // DataSeriesList
+  // has been removed due to collision
+  // with AppBloc. Refactor MultiSeriesBarChart to
+  // work with List<DataSeries> instead.
   final double width = 430.0;
   final double height = 200.0;
 

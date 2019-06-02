@@ -1,21 +1,22 @@
 import 'dart:async';
+import 'package:barchart/barchart/dataseries.dart';
 
 import 'auth.dart';
 import 'daterange.dart';
-import '../barchart/dataserieslist.dart';
 
 class AppBloc {
+  List<DataSeries> result = [];
   StreamController<DateRange> calendarEventsStreamController =
       StreamController<DateRange>();
 
   StreamSink<DateRange> get calendarEventsStreamSink =>
       calendarEventsStreamController.sink;
 
-  StreamController<DataSeriesList> dataSeriesStreamController =
-      StreamController<DataSeriesList>();
-  StreamSink<DataSeriesList> get _dataSeriesStreamSink =>
+  StreamController<List<DataSeries>> dataSeriesStreamController =
+      StreamController<List<DataSeries>>();
+  StreamSink<List<DataSeries>> get _dataSeriesStreamSink =>
       dataSeriesStreamController.sink;
-  Stream<DataSeriesList> get dataSeriesStream =>
+  Stream<List<DataSeries>> get dataSeriesStream =>
       dataSeriesStreamController.stream;
 
   AppBloc() {
@@ -23,8 +24,16 @@ class AppBloc {
   }
 
   void _mapDateRangeToDataSeriesList(DateRange dateRange) {
-    final dataSeriesList = GoogleCalendarApi.getEventsByDateRange(dateRange);
-    _dataSeriesStreamSink.add(dataSeriesList);
+    GoogleCalendarApi.getCalendarListByDateRange(dateRange).then((calendars){
+      calendars.items.forEach((calendar){
+
+        GoogleCalendarApi.getCalendarEventsByDateRange(calendar.id, dateRange).then((events){
+          // result.add(events);
+          // _dataSeriesStreamSink.add(result);
+        });
+      });
+    });
+    
   }
 
   void dispose() {

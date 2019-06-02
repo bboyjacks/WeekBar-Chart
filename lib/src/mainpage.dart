@@ -1,3 +1,4 @@
+import 'package:barchart/barchart/dataseries.dart';
 import 'package:flutter/material.dart';
 import 'authprovider.dart';
 import 'daterange.dart';
@@ -16,6 +17,8 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appBloc = AuthProvider.of(context).appBloc;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Main Page"),
@@ -27,14 +30,25 @@ class MainPage extends StatelessWidget {
           _signOut(context);
         },
       )),
-      body: Container(),
+      body: StreamBuilder(
+        stream: appBloc.dataSeriesStream,
+        builder: (BuildContext context, AsyncSnapshot<List<DataSeries>> snapshot) {
+          if (snapshot.hasData) {
+            print("Received something: ${snapshot.data}");
+          }
+          else {
+            print("Responded but no data");
+          }
+          return Container();
+        }
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          final appBloc = AuthProvider.of(context).appBloc;
           appBloc.calendarEventsStreamSink.add(DateRange(
-            start: DateTime(2018).toUtc(), 
-            end: DateTime.now().toUtc()
+            start: DateTime(2018), 
+            end: DateTime.now(),
+            auth: AuthProvider.of(context).auth
           )
         );
       }),

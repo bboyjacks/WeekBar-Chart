@@ -3,8 +3,8 @@ import 'package:http/http.dart';
 import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
-import '../barchart/dataserieslist.dart';
 import 'daterange.dart';
+import '../barchart/dataseries.dart';
 
 abstract class BaseAuth {
   void signIn([VoidCallback signInCallback(GoogleSignInAccount currentUser)]);
@@ -57,8 +57,29 @@ class Auth implements BaseAuth {
 }
 
 class GoogleCalendarApi {
-  static DataSeriesList getEventsByDateRange(DateRange dateRange)  {
-    print("queried api");
-    return DataSeriesList();
+  static Future<calendar.CalendarList> getCalendarListByDateRange(DateRange dateRange) async {
+    final authHeaders = await dateRange.auth.currentUser().authHeaders;
+    final googleClient = GoogleHttpClient(authHeaders);
+    final calList = await calendar.CalendarApi(googleClient).calendarList.list();
+    return calList;
+  }
+
+  static Future<DataSeries> getCalendarEventsByDateRange(
+    String calendarId, 
+    DateRange dateRange) async {
+    
+    final authHeaders = await dateRange.auth.currentUser().authHeaders;
+    final googleClient = GoogleHttpClient(authHeaders);
+    final eventsList = await calendar.CalendarApi(googleClient).events.list(
+      calendarId,
+      timeMin: dateRange.start.toUtc(),
+      timeMax: dateRange.end.toUtc()
+    );
+    print("calendar: ${eventsList.summary} -> Num events: ${eventsList.items.length}");
+    return DataSeries();
+  }
+
+  static DataSeries _makeDataSeries(calendar.Events events) {
+    return DataSeries();
   }
 }
