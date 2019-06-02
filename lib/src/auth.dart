@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'daterange.dart';
 import '../barchart/dataseries.dart';
+import 'eventdata.dart';
 
 abstract class BaseAuth {
   void signIn([VoidCallback signInCallback(GoogleSignInAccount currentUser)]);
@@ -64,7 +65,7 @@ class GoogleCalendarApi {
     return calList;
   }
 
-  static Future<DataSeries> getCalendarEventsByDateRange(
+  static Future<EventData> getCalendarEventsByDateRange(
     String calendarId, 
     DateRange dateRange) async {
     
@@ -75,11 +76,6 @@ class GoogleCalendarApi {
       timeMin: dateRange.start.toUtc(),
       timeMax: dateRange.end.toUtc()
     );
-    print("calendar: ${eventsList.summary} -> Num events: ${eventsList.items.length}");
-    return DataSeries();
-  }
-
-  static DataSeries _makeDataSeries(calendar.Events events) {
-    return DataSeries();
+    return EventData(summary: eventsList.summary, numEvents: eventsList.items.length);
   }
 }
