@@ -6,6 +6,7 @@ import 'eventdata.dart';
 
 class AppBloc {
   List<EventData> result = [];
+  Map<String, String> colors = {};
   StreamController<DateRange> calendarEventsStreamController =
       StreamController<DateRange>();
 
@@ -26,14 +27,24 @@ class AppBloc {
   void _mapDateRangeToDataSeriesList(DateRange dateRange) {
     GoogleCalendarApi.getCalendarListByDateRange(dateRange).then((calendars){
       calendars.items.forEach((calendar){
-
+        colors[calendar.summary] = calendar.backgroundColor;
+        print(colors);
         GoogleCalendarApi.getCalendarEventsByDateRange(calendar.id, dateRange).then((events){
-          result.add(events);
-          _dataSeriesStreamSink.add(result);
+          if (!(events is EmptyEventData)) {
+
+            events.color = colors[events.summary];
+            print("color: ${events.summary}");
+            result.add(events);
+            _dataSeriesStreamSink.add(result);
+          }
         });
       });
     });
-    
+  }
+
+  void reset() {
+    result.clear();
+    colors.clear();
   }
 
   void dispose() {

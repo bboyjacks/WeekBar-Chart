@@ -4,6 +4,7 @@ import 'appbloc.dart';
 import 'authprovider.dart';
 import 'eventdatavaluenotifier.dart';
 import 'eventdata.dart';
+import 'dart:async';
 
 
 double map(double val, double inStart, double inEnd, double outStart, double outEnd) {
@@ -21,6 +22,28 @@ double max(List<double> data) {
   return max;
 }
 
+double maxBarData(List<BarData> data) {
+  double max = -double.infinity;
+  data.forEach((item) {
+    if (max < item.numEvents) {
+      max = item.numEvents;
+    }
+  });
+  return max;
+}
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}
+
 class BarChart extends StatefulWidget {
   BarChart({
     this.width,
@@ -33,9 +56,16 @@ class BarChart extends StatefulWidget {
   _BarChartState createState() => _BarChartState();
 }
 
+enum BarChartDataStatus {
+  empty,
+  notEmpty
+}
+
 class _BarChartState extends State<BarChart> {
 
   EventDataValueNotifier listOfEventDatas;
+  BarChartDataStatus status = BarChartDataStatus.empty;
+  StreamSubscription<List<EventData>> stream;
 
   @override
   void initState() {
@@ -44,39 +74,65 @@ class _BarChartState extends State<BarChart> {
   }
 
   void _dataChanged(List<EventData> data) {
-    List<double> newValues = [];
-    data.forEach((item){
-      newValues.add(item.numEvents.toDouble());
+    listOfEventDatas.update(data);
+    setState(() {
+      status = BarChartDataStatus.notEmpty;
     });
-    listOfEventDatas.update(newValues);
   }
+
+  @override
+    void dispose() {
+      super.dispose();
+      stream.cancel();
+    }
 
   @override
   Widget build(BuildContext context) {
     AppBloc appBloc = AuthProvider.of(context).appBloc;
-    appBloc.dataSeriesStream.listen(_dataChanged);
-    return Center(
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.red
-          )
-        ),
-        child: FittedBox(
-          child: SizedBox(
-            width: widget.width,
-            height: widget.height,
-            child: CustomPaint(
-              painter: BarChartPainter(
-                data: listOfEventDatas
-              ),
-              size: Size(widget.width, widget.height),
+    if (stream == null) {
+      stream = appBloc.dataSeriesStream.listen(_dataChanged);
+    }
+
+    if (status == BarChartDataStatus.empty) {
+      return Center(child: CircularProgressIndicator());
+    }
+    else {
+      return Center(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.red
             )
-          )
-        ,),
-      ),
-    );
+          ),
+          child: FittedBox(
+            child: SizedBox(
+              width: widget.width,
+              height: widget.height,
+              child: CustomPaint(
+                painter: BarChartPainter(
+                  data: listOfEventDatas
+                ),
+                size: Size(widget.width, widget.height),
+              )
+            )
+          ,),
+        ),
+      );
+    }
+
   }
+}
+
+class BarData {
+  BarData(
+    {
+      this.numEvents,
+      this.color
+    }
+  );
+
+  final double numEvents;
+  final String color;
 }
 
 class BarChartPainter extends CustomPainter {
@@ -104,13 +160,25 @@ class BarChartPainter extends CustomPainter {
     return starts;
   }
 
+  List<BarData> get _series {
+    List<BarData> result = [];
+    data.value.forEach((eventData) {
+      result.add(BarData(
+        numEvents: eventData.numEvents.toDouble(),
+        color: eventData.color
+      ));
+    });
+    return result;
+  }
+
   @override
-  void paint(Canvas canvas, Size size) { 
+  void paint(Canvas canvas, Size size) {
+    List<BarData> series = _series;
     List<double> starts = _starts;
-    double maxValue = max(data.value);
+    double maxValue = maxBarData(series);
     double barWidth = _barWidth;
-    for (int i = 0; i < data.value.length; i++) {
-      double unitData = map(data.value[i], 0, maxValue, 0, 1);
+    for (int i = 0; i < series.length; i++) {
+      double unitData = map(series[i].numEvents, 0, maxValue, 0, 1);
       double startX = map(starts[i], 0, 1, 0, size.width);
       double startY = map(1, 0, 1, 0, size.height);
       double endX = map(starts[i] + barWidth, 0, 1, 0, size.width);
@@ -120,7 +188,7 @@ class BarChartPainter extends CustomPainter {
           Offset(startX, startY), 
           Offset(endX, endY)
         ),
-        Paint()..color = Colors.red
+        Paint()..color = HexColor(series[i].color)
       );
     }
   }

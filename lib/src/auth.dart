@@ -4,7 +4,6 @@ import 'package:googleapis/calendar/v3.dart' as calendar;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'daterange.dart';
-import '../barchart/dataseries.dart';
 import 'eventdata.dart';
 
 abstract class BaseAuth {
@@ -76,6 +75,17 @@ class GoogleCalendarApi {
       timeMin: dateRange.start.toUtc(),
       timeMax: dateRange.end.toUtc()
     );
-    return EventData(summary: eventsList.summary, numEvents: eventsList.items.length);
+
+    if (eventsList != null && eventsList.items.length > 0) {
+      print("auth color: ${eventsList.items[0].colorId}");
+      return EventData(
+        summary: eventsList.summary, 
+        numEvents: eventsList.items.length
+      );
+    }
+    else {
+      return EmptyEventData();
+    }
+
   }
 }

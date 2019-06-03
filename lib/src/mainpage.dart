@@ -17,6 +17,14 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppBloc appBloc = AuthProvider.of(context).appBloc;
+      appBloc.reset();
+      appBloc.calendarEventsStreamSink.add(DateRange(
+        start: DateTime(2018), 
+        end: DateTime.now(),
+        auth: AuthProvider.of(context).auth
+      )
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text("Main Page"),
@@ -32,17 +40,6 @@ class MainPage extends StatelessWidget {
         width: 400.0,
         height: 200.0
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          AppBloc appBloc = AuthProvider.of(context).appBloc;
-          appBloc.calendarEventsStreamSink.add(DateRange(
-            start: DateTime(2018), 
-            end: DateTime.now(),
-            auth: AuthProvider.of(context).auth
-          )
-        );
-      }),
     );
   }
 }

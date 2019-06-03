@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-class EventDataValueNotifier extends ValueNotifier<List<double>> {
-  EventDataValueNotifier(List<double> value) : super(value);
+import 'eventdata.dart';
 
-  void update(List<double> data) {
-    value = data;    
+class EventDataValueNotifier extends ValueNotifier<List<EventData>> {
+  EventDataValueNotifier(List<EventData> value) : super(value);
+
+  void update(List<EventData> data) {
+    value = data;
+    notifyListeners();
   }
 }
