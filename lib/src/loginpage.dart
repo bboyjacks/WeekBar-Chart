@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'authprovider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({this.signInCallback});
@@ -18,7 +19,36 @@ class LoginPage extends StatelessWidget {
       body: Center(
         child: Container(
           child: RaisedButton(
-            child: Text("Log in"),
+            color: Colors.blue[200],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.elliptical(30, 30)
+              )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 15,
+                right: 5,
+                bottom: 15,
+                left: 5
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(FontAwesomeIcons.google,
+                    color: Colors.red[900],
+                  ),
+                  SizedBox(width: 20,),
+                  Text("Log in",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromRGBO(237, 96, 45, 1.0)
+                    )
+                  ),
+                ],
+              ),
+            ),
             onPressed: (){
               _login(context);
             },

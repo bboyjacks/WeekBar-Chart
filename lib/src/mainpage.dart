@@ -36,9 +36,14 @@ class MainPage extends StatelessWidget {
           _signOut(context);
         },
       )),
-      body: BarChart(
-        width: 400.0,
-        height: 200.0
+      body: Column(
+        children: <Widget>[
+          SizedBox(height: 20,),
+          BarChart(
+            width: 400.0,
+            height: 200.0
+          ),
+        ],
       ),
     );
   }

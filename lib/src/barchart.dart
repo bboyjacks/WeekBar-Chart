@@ -97,30 +97,73 @@ class _BarChartState extends State<BarChart> {
       return Center(child: CircularProgressIndicator());
     }
     else {
-      return Center(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.red
-            )
+      return Column(
+        children: <Widget>[
+          BarChartCanvas(
+            width: widget.width,
+            height: widget.height,
+            listOfEventDatas: listOfEventDatas,
           ),
-          child: FittedBox(
-            child: SizedBox(
-              width: widget.width,
-              height: widget.height,
-              child: CustomPaint(
-                painter: BarChartPainter(
-                  data: listOfEventDatas
-                ),
-                size: Size(widget.width, widget.height),
-              )
-            )
-          ,),
-        ),
+        ],
       );
     }
-
   }
+}
+
+class BarChartCanvas extends StatelessWidget {
+  BarChartCanvas(
+    {
+      this.width,
+      this.height,
+      this.listOfEventDatas
+    }
+  );
+
+  final double width;
+  final double height;
+  final EventDataValueNotifier listOfEventDatas;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(0, 5),
+                      blurRadius: 10,
+                      color: Colors.grey
+                    ),
+                    BoxShadow(
+                      color: Colors.white
+                    )
+                  ]
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FittedBox(
+                    child: SizedBox(
+                      width: width,
+                      height: height,
+                      child: CustomPaint(
+                        painter: BarChartPainter(
+                          data: listOfEventDatas
+                        ),
+                        size: Size(width, height),
+                      )
+                    )
+                  ,),
+                ),
+              ),
+            ),
+          );
+  }
+
 }
 
 class BarData {
@@ -171,8 +214,20 @@ class BarChartPainter extends CustomPainter {
     return result;
   }
 
+  void _paintLines(Canvas canvas, Size size) {
+    for (int i = 1; i <= 10; i += 2) {
+      double y = map(1 - i * 0.1, 0, 1, 0, size.height);
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(size.width, y), 
+        Paint()..color = Colors.black
+      );
+    }
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
+    _paintLines(canvas, size);
     List<BarData> series = _series;
     List<double> starts = _starts;
     double maxValue = maxBarData(series);

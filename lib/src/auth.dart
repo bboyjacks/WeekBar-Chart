@@ -77,7 +77,6 @@ class GoogleCalendarApi {
     );
 
     if (eventsList != null && eventsList.items.length > 0) {
-      print("auth color: ${eventsList.items[0].colorId}");
       return EventData(
         summary: eventsList.summary, 
         numEvents: eventsList.items.length

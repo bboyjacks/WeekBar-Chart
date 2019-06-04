@@ -28,12 +28,10 @@ class AppBloc {
     GoogleCalendarApi.getCalendarListByDateRange(dateRange).then((calendars){
       calendars.items.forEach((calendar){
         colors[calendar.summary] = calendar.backgroundColor;
-        print(colors);
         GoogleCalendarApi.getCalendarEventsByDateRange(calendar.id, dateRange).then((events){
           if (!(events is EmptyEventData)) {
 
             events.color = colors[events.summary];
-            print("color: ${events.summary}");
             result.add(events);
             _dataSeriesStreamSink.add(result);
           }
