@@ -25,18 +25,8 @@ class AppBloc {
   }
 
   void _mapDateRangeToDataSeriesList(DateRange dateRange) {
-    GoogleCalendarApi.getCalendarListByDateRange(dateRange).then((calendars){
-      calendars.items.forEach((calendar){
-        colors[calendar.summary] = calendar.backgroundColor;
-        GoogleCalendarApi.getCalendarEventsByDateRange(calendar.id, dateRange).then((events){
-          if (!(events is EmptyEventData)) {
-
-            events.color = colors[events.summary];
-            result.add(events);
-            _dataSeriesStreamSink.add(result);
-          }
-        });
-      });
+    GoogleCalendarApi.getEventListByDateRange(dateRange).then((eventsList){
+      _dataSeriesStreamSink.add(eventsList);
     });
   }
 

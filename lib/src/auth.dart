@@ -57,34 +57,27 @@ class Auth implements BaseAuth {
 }
 
 class GoogleCalendarApi {
-  static Future<calendar.CalendarList> getCalendarListByDateRange(DateRange dateRange) async {
+  static Future<List<EventData>> getEventListByDateRange(DateRange dateRange) async {
     final authHeaders = await dateRange.auth.currentUser().authHeaders;
     final googleClient = GoogleHttpClient(authHeaders);
     final calList = await calendar.CalendarApi(googleClient).calendarList.list();
-    return calList;
-  }
-
-  static Future<EventData> getCalendarEventsByDateRange(
-    String calendarId, 
-    DateRange dateRange) async {
-    
-    final authHeaders = await dateRange.auth.currentUser().authHeaders;
-    final googleClient = GoogleHttpClient(authHeaders);
-    final eventsList = await calendar.CalendarApi(googleClient).events.list(
-      calendarId,
-      timeMin: dateRange.start.toUtc(),
-      timeMax: dateRange.end.toUtc()
-    );
-
-    if (eventsList != null && eventsList.items.length > 0) {
-      return EventData(
-        summary: eventsList.summary, 
-        numEvents: eventsList.items.length
+    final List<EventData> result = [];
+    for (int i = 0; i < calList.items.length; i++) {
+      final eventsList = await calendar.CalendarApi(googleClient).events.list(
+        calList.items[i].id,
+        timeMin: dateRange.start.toUtc(),
+        timeMax: dateRange.end.toUtc()
       );
+      if (eventsList != null && eventsList.items.length > 0) {
+        result.add(
+          EventData(
+            summary: eventsList.summary, 
+            numEvents: eventsList.items.length,
+            color: calList.items[i].backgroundColor
+          )
+        );
+      }
     }
-    else {
-      return EmptyEventData();
-    }
-
+    return result;
   }
 }
