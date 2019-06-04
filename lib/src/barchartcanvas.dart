@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'eventdatavaluenotifier.dart';
 import 'barchartpainter.dart';
+import 'eventdata.dart';
 
 class BarChartCanvas extends StatelessWidget {
   BarChartCanvas(
     {
       this.width,
       this.height,
-      this.listOfEventDatas
+      this.eventDatas
     }
   );
 
   final double width;
   final double height;
-  final EventDataValueNotifier listOfEventDatas;
+  final List<EventData> eventDatas;
   
   BoxDecoration _boxShadow() {
     return BoxDecoration(
@@ -40,7 +40,7 @@ class BarChartCanvas extends StatelessWidget {
         height: height,
         child: CustomPaint(
           painter: BarChartPainter(
-            data: listOfEventDatas
+            data: eventDatas
           ),
           size: Size(width, height),
         )

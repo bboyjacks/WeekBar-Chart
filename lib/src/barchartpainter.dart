@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'eventdatavaluenotifier.dart';
 import 'utils.dart';
+import 'eventdata.dart';
 
 double maxBarData(List<BarData> data) {
   double max = -double.infinity;
@@ -17,12 +17,12 @@ class BarChartPainter extends CustomPainter {
     {
       this.data
     }
-  ) : super(repaint: data);
-  final EventDataValueNotifier data;
+  );
+  final List<EventData> data;
   final double _barGap = 0.01;
 
   double get _barWidth {
-    int n = data.value.length;
+    int n = data.length;
     return (1 - _barGap * (n + 1)) / n;
   }
 
@@ -39,7 +39,7 @@ class BarChartPainter extends CustomPainter {
 
   List<BarData> get _series {
     List<BarData> result = [];
-    data.value.forEach((eventData) {
+    data.forEach((eventData) {
       result.add(BarData(
         numEvents: eventData.numEvents.toDouble(),
         color: eventData.color

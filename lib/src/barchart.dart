@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'appbloc.dart';
 import 'authprovider.dart';
-import 'eventdatavaluenotifier.dart';
 import 'eventdata.dart';
 import 'dart:async';
 import 'barchartcanvas.dart';
@@ -29,18 +28,12 @@ enum BarChartDataStatus {
 
 class _BarChartState extends State<BarChart> {
 
-  EventDataValueNotifier listOfEventDatas;
+  List<EventData> eventDatas = [];
   BarChartDataStatus status = BarChartDataStatus.empty;
   StreamSubscription<List<EventData>> stream;
 
-  @override
-  void initState() {
-    super.initState();
-    listOfEventDatas = EventDataValueNotifier([]);    
-  }
-
   void _dataChanged(List<EventData> data) {
-    listOfEventDatas.update(data);
+    eventDatas = data;
     setState(() {
       status = BarChartDataStatus.notEmpty;
     });
@@ -71,7 +64,7 @@ class _BarChartState extends State<BarChart> {
           BarChartCanvas(
             width: widget.width,
             height: widget.height,
-            listOfEventDatas: listOfEventDatas,
+            eventDatas: eventDatas,
           ),
         ],
       );
