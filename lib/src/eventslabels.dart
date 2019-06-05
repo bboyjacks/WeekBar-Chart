@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'authprovider.dart';
 import 'eventdata.dart';
 import 'utils.dart';
 
@@ -14,13 +13,17 @@ class EventsLabel extends StatelessWidget {
 
   Widget _buildLabels(List<EventData> calendarEventsData) {
     return ListView.builder(
+      shrinkWrap: true,
       itemCount: calendarEventsData.length,
       itemBuilder: (BuildContext context, int index) {
-        return Container(
-          color: HexColor(calendarEventsData[index].color),
-          child: Expanded(
-            child: EventLabelListTile(calendarEventsData[index])
-          )
+        return Padding(
+          padding: const EdgeInsets.only(
+            top: 8.0,
+            bottom: 8.0
+          ),
+          child: Container(
+            color: HexColor(calendarEventsData[index].color),
+            child: EventLabelListTile(calendarEventsData[index])),
         );
       },
     );
@@ -28,9 +31,6 @@ class EventsLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // double height = MediaQuery.of(context).size.height;
-    // double chartHeight = AuthProvider.of(context).barChartHeight;
-    // double chartWidth = AuthProvider.of(context).barChartWidth;
     return _buildLabels(calendarEventsData);
   }
 }
@@ -39,6 +39,7 @@ class EventLabelListTile extends ListTile {
   EventLabelListTile(EventData eventData)
       : super(
     title: Text(eventData.summary),
-    subtitle: Text(eventData.numEvents.toString())
+    subtitle: Text(eventData.numEvents.toString()),
+    dense: true
   );
 }
