@@ -1,73 +1,99 @@
 import 'package:flutter/material.dart';
+import 'barchartpainter.dart';
+import 'utils.dart';
 
-import 'appbloc.dart';
-import 'authprovider.dart';
-import 'eventdata.dart';
-import 'dart:async';
-import 'barchartcanvas.dart';
+class BarChart extends StatelessWidget {
+  BarChart(
+    {
+      this.width,
+      this.height,
+      this.data,
+      this.colors
+    }
+  );
 
-
-
-
-class BarChart extends StatefulWidget {
-  BarChart({
-    this.width,
-    this.height
-  });
   final double width;
   final double height;
+  final List<double> data;
+  final List<String> colors;
+  
+  BoxDecoration _boxShadow() {
+    return BoxDecoration(
+      border: Border.all(
+        color: Colors.grey
+      ),
+      boxShadow: [
+        BoxShadow(
+          offset: Offset(0, 5),
+          blurRadius: 10,
+          color: Colors.grey
+        ),
+        BoxShadow(
+          color: Colors.white
+        )
+      ]
+    );
+  }
 
-  @override
-  _BarChartState createState() => _BarChartState();
-}
+  Widget barChartPainter() {
 
-enum BarChartDataStatus {
-  empty,
-  notEmpty
-}
-
-class _BarChartState extends State<BarChart> {
-
-  List<EventData> eventDatas = [];
-  BarChartDataStatus status = BarChartDataStatus.empty;
-  StreamSubscription<List<EventData>> stream;
-
-  void _dataChanged(List<EventData> data) {
-    eventDatas = data;
-    setState(() {
-      status = BarChartDataStatus.notEmpty;
-    });
+    return FittedBox(
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: CustomPaint(
+          painter: BarChartPainter(
+            max: max(data),
+            data: data,
+            colors: colors
+          ),
+          size: Size(width, height),
+        )
+      )
+    ,);
   }
 
   @override
-    void dispose() {
-      super.dispose();
-      stream.cancel();
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: _boxShadow(),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: barChartPainter(),
+          ),
+        ),
+    );
+  }
+}
+
+class EmptyBarChart extends BarChart {
+  EmptyBarChart(
+    {
+      double width,
+      double height
     }
+  ) : super(width: width, height: height);
 
   @override
-  Widget build(BuildContext context) {
-    AppBloc appBloc = AuthProvider.of(context).appBloc;
-    if (stream == null) {
-      stream = appBloc.dataSeriesStream.listen(_dataChanged);
-    }
-
-    if (status == BarChartDataStatus.empty) {
-      return EmptyBarChartCanvas(
-        width: widget.width,
-        height: widget.height
-      );
-    }
-    else {
-      return Column(
-        children: <Widget>[
-          BarChartCanvas(
-            width: widget.width,
-            height: widget.height,
-            eventDatas: eventDatas,
-          ),
-        ],
-      );
-    }
+  Widget barChartPainter() {
+    return FittedBox(
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Stack(
+          children: <Widget>[
+            CustomPaint(
+              painter: EmptyBarChartPainter(),
+              size: Size(width, height),
+            ),
+            Center(
+              child: CircularProgressIndicator()
+            )
+          ],
+        )
+      )
+    ,);
   }
 }

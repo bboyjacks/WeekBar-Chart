@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'utils.dart';
-import 'eventdata.dart';
-
-double maxBarData(List<BarData> data) {
-  double max = -double.infinity;
-  data.forEach((item) {
-    if (max < item.numEvents) {
-      max = item.numEvents;
-    }
-  });
-  return max;
-}
 
 class BarChartPainter extends CustomPainter {
   BarChartPainter(
     {
-      this.data
+      this.data,
+      this.colors,
+      this.max,
     }
   );
-  final List<EventData> data;
   final double _barGap = 0.01;
+  final double max;
+  final List<double> data;
+  final List<String> colors;
 
   double get _barWidth {
     int n = data.length;
@@ -37,16 +30,6 @@ class BarChartPainter extends CustomPainter {
     return starts;
   }
 
-  List<BarData> get _series {
-    List<BarData> result = [];
-    data.forEach((eventData) {
-      result.add(BarData(
-        numEvents: eventData.numEvents.toDouble(),
-        color: eventData.color
-      ));
-    });
-    return result;
-  }
 
   void _paintLines(Canvas canvas, Size size) {
     for (int i = 1; i <= 10; i += 2) {
@@ -59,15 +42,11 @@ class BarChartPainter extends CustomPainter {
     }
   }
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    _paintLines(canvas, size);
-    List<BarData> series = _series;
+  void _paintBars(Canvas canvas, Size size) {
     List<double> starts = _starts;
-    double maxValue = maxBarData(series);
     double barWidth = _barWidth;
-    for (int i = 0; i < series.length; i++) {
-      double unitData = map(series[i].numEvents, 0, maxValue, 0, 1);
+    for (int i = 0; i < data.length; i++) {
+      double unitData = map(data[i], 0, max, 0, 1);
       double startX = map(starts[i], 0, 1, 0, size.width);
       double startY = map(1, 0, 1, 0, size.height);
       double endX = map(starts[i] + barWidth, 0, 1, 0, size.width);
@@ -77,9 +56,15 @@ class BarChartPainter extends CustomPainter {
           Offset(startX, startY), 
           Offset(endX, endY)
         ),
-        Paint()..color = HexColor(series[i].color)
+        Paint()..color = HexColor(colors[i])
       );
     }
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _paintLines(canvas, size);
+    _paintBars(canvas, size);
   }
 
   @override
