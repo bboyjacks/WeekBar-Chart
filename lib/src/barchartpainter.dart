@@ -7,12 +7,15 @@ class BarChartPainter extends CustomPainter {
       this.data,
       this.colors,
       this.max,
+      Animation<double> animation
     }
-  );
-  final double _barGap = 0.01;
+  ) : animation = animation, super(repaint: animation);
+  final double _barGap = 0.05;
   final double max;
   final List<double> data;
   final List<String> colors;
+  final Animation<double> animation;
+
 
   double get _barWidth {
     int n = data.length;
@@ -50,7 +53,7 @@ class BarChartPainter extends CustomPainter {
       double startX = map(starts[i], 0, 1, 0, size.width);
       double startY = map(1, 0, 1, 0, size.height);
       double endX = map(starts[i] + barWidth, 0, 1, 0, size.width);
-      double endY = map(1 - unitData, 0, 1, 0, size.height);
+      double endY = map(1 - (unitData * animation.value), 0, 1, 0, size.height);
       canvas.drawRect(
         Rect.fromPoints(
           Offset(startX, startY), 

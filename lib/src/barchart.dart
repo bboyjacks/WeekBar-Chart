@@ -8,14 +8,16 @@ class BarChart extends StatelessWidget {
       this.width,
       this.height,
       this.data,
-      this.colors
+      this.colors,
+      Animation<double> animation
     }
-  );
+  ) : animation = animation;
 
   final double width;
   final double height;
   final List<double> data;
   final List<String> colors;
+  final Animation<double> animation;
   
   BoxDecoration _boxShadow() {
     return BoxDecoration(
@@ -45,7 +47,8 @@ class BarChart extends StatelessWidget {
           painter: BarChartPainter(
             max: max(data),
             data: data,
-            colors: colors
+            colors: colors,
+            animation: animation
           ),
           size: Size(width, height),
         )

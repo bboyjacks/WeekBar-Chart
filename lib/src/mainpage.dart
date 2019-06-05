@@ -5,6 +5,7 @@ import 'daterange.dart';
 import 'appbloc.dart';
 import 'barchart.dart';
 import 'eventdata.dart';
+import 'eventslabels.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({
@@ -20,12 +21,24 @@ enum MainPageStatus {
   ready
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
   StreamSubscription<List<EventData>> stream;
   MainPageStatus status = MainPageStatus.notReady;
   List<EventData> calendarEventsData;
-  final double barChartWidth = 400.0;
-  final double barChartHeight = 200.0;
+  AnimationController animationController;
+  Tween<double> controller;
+
+  @override
+  void initState(){
+    super.initState();
+    animationController = AnimationController(
+      duration: Duration(
+        milliseconds: 800
+      ),
+      vsync: this
+    );
+    controller = Tween(begin: 0.0, end: 1.0);
+  }
 
   void _signOut(BuildContext context) {
     AuthProvider.of(context).auth.signOut(widget.signOutCallback);
@@ -73,6 +86,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _body(BuildContext context) {
+    double barChartWidth = AuthProvider.of(context).barChartWidth;
+    double barChartHeight = AuthProvider.of(context).barChartHeight;
     if (status == MainPageStatus.notReady) {
       return Column(
         children: <Widget>[
@@ -85,15 +100,24 @@ class _MainPageState extends State<MainPage> {
       );
     }
     else {
+      animationController.forward();
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 20,),
           BarChart(
             width: barChartWidth,
             height: barChartHeight,
             data: _extractData(calendarEventsData),
-            colors: _extractColors(calendarEventsData)
+            colors: _extractColors(calendarEventsData),
+            animation: controller.animate(animationController),
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: EventsLabel(
+              calendarEventsData: calendarEventsData
+            ),
+          )
         ],
       );
     }
@@ -103,6 +127,7 @@ class _MainPageState extends State<MainPage> {
   void dispose() {
     super.dispose();
     stream.cancel();
+    animationController.dispose();
   }
 
   @override
@@ -124,6 +149,3 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
-
-
-
