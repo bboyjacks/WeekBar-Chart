@@ -2,23 +2,40 @@ import 'package:flutter/material.dart';
 import 'barchartpainter.dart';
 import 'utils.dart';
 
-class BarChart extends StatelessWidget {
+class BarChart extends StatefulWidget {
   BarChart(
     {
       this.width,
       this.height,
       this.data,
       this.colors,
-      Animation<double> animation
     }
-  ) : animation = animation;
-
+  );
   final double width;
   final double height;
   final List<double> data;
   final List<String> colors;
-  final Animation<double> animation;
+
+  @override
+  _BarChartState createState() => _BarChartState();
+}
+
+class _BarChartState extends State<BarChart> with SingleTickerProviderStateMixin {
+  AnimationController animationController;
+  Tween<double> animation;
   
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(duration: Duration(milliseconds: 900), vsync: this);
+    animation = Tween(begin: 0, end: 1);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   BoxDecoration _boxShadow() {
     return BoxDecoration(
       border: Border.all(
@@ -38,19 +55,20 @@ class BarChart extends StatelessWidget {
   }
 
   Widget barChartPainter() {
-
+    animationController.reset();
+    animationController.forward();
     return FittedBox(
       child: SizedBox(
-        width: width,
-        height: height,
+        width: widget.width,
+        height: widget.height,
         child: CustomPaint(
           painter: BarChartPainter(
-            max: max(data),
-            data: data,
-            colors: colors,
-            animation: animation
+            max: max(widget.data),
+            data: widget.data,
+            colors: widget.colors,
+            animation: animation.animate(animationController)
           ),
-          size: Size(width, height),
+          size: Size(widget.width, widget.height),
         )
       )
     ,);
@@ -68,35 +86,5 @@ class BarChart extends StatelessWidget {
           ),
         ),
     );
-  }
-}
-
-class EmptyBarChart extends BarChart {
-  EmptyBarChart(
-    {
-      double width,
-      double height
-    }
-  ) : super(width: width, height: height);
-
-  @override
-  Widget barChartPainter() {
-    return FittedBox(
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: Stack(
-          children: <Widget>[
-            CustomPaint(
-              painter: EmptyBarChartPainter(),
-              size: Size(width, height),
-            ),
-            Center(
-              child: CircularProgressIndicator()
-            )
-          ],
-        )
-      )
-    ,);
   }
 }

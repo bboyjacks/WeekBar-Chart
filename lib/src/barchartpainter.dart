@@ -46,6 +46,7 @@ class BarChartPainter extends CustomPainter {
   }
 
   void _paintBars(Canvas canvas, Size size) {
+    print(animation.value);
     List<double> starts = _starts;
     double barWidth = _barWidth;
     for (int i = 0; i < data.length; i++) {
@@ -72,16 +73,4 @@ class BarChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(BarChartPainter oldPainter) => false;
-}
-
-class EmptyBarChartPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
-  }
-
 }

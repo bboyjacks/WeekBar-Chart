@@ -8,13 +8,13 @@ class AppBloc {
   List<EventData> result = [];
   Map<String, String> colors = {};
   StreamController<DateRange> calendarEventsStreamController =
-      StreamController<DateRange>();
+      StreamController<DateRange>.broadcast();
 
   StreamSink<DateRange> get calendarEventsStreamSink =>
       calendarEventsStreamController.sink;
 
   StreamController<List<EventData>> dataSeriesStreamController =
-      StreamController<List<EventData>>();
+      StreamController<List<EventData>>.broadcast();
   StreamSink<List<EventData>> get _dataSeriesStreamSink =>
       dataSeriesStreamController.sink;
   Stream<List<EventData>> get dataSeriesStream =>
