@@ -84,9 +84,13 @@ class _BarChartState extends State<BarChart> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border.all(
-          color: Colors.red
-        )
+          color: Colors.grey[400]
+        ),
+        boxShadow: [
+          BoxShadow(offset: Offset(0, 5), blurRadius: 10.0, color: Colors.grey[200])
+        ]
       ),
       child: FittedBox(
         child: SizedBox(

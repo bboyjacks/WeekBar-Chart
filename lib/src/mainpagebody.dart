@@ -7,8 +7,9 @@ class MainPageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        EventsInfo(),
-        BarChartControls()
+        Expanded(child: EventsInfo()),
+        SizedBox(width: 8),
+        Expanded(child: BarChartControls())
       ]
     );
   }

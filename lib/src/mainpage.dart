@@ -29,12 +29,25 @@ class MainPage extends StatelessWidget {
         },
       )),
       body: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
-          BarChart(
-            width: 400,
-            height: 200
+          Flexible(
+            flex: 2,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              child: BarChart(
+                width: 400,
+                height: 200
+              ),
+            ),
           ),
-          MainPageBody()
+          Flexible(
+            flex: 3,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              child: MainPageBody()
+            )
+          )
         ]
       )
     );
