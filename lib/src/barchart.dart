@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'appbloc.dart';
+import 'authprovider.dart';
 import 'barchartpainter.dart';
+import 'eventdata.dart';
 import 'utils.dart';
 
 class BarChart extends StatefulWidget {
@@ -7,15 +11,10 @@ class BarChart extends StatefulWidget {
     {
       this.width,
       this.height,
-      this.data,
-      this.colors,
     }
   );
   final double width;
   final double height;
-  final List<double> data;
-  final List<String> colors;
-
   @override
   _BarChartState createState() => _BarChartState();
 }
@@ -23,6 +22,7 @@ class BarChart extends StatefulWidget {
 class _BarChartState extends State<BarChart> with SingleTickerProviderStateMixin {
   AnimationController animationController;
   Tween<double> animation;
+  
   
   @override
   void initState() {
@@ -36,55 +36,65 @@ class _BarChartState extends State<BarChart> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  BoxDecoration _boxShadow() {
-    return BoxDecoration(
-      border: Border.all(
-        color: Colors.grey
-      ),
-      boxShadow: [
-        BoxShadow(
-          offset: Offset(0, 5),
-          blurRadius: 10,
-          color: Colors.grey
-        ),
-        BoxShadow(
-          color: Colors.white
-        )
-      ]
-    );
+  List<double> _extractValues(List<EventData> data) {
+    List<double> result = [];
+    data.forEach((item) {
+      result.add(item.numEvents.toDouble());
+    });
+    return result;
   }
 
-  Widget barChartPainter() {
-    animationController.reset();
-    animationController.forward();
-    return FittedBox(
-      child: SizedBox(
-        width: widget.width,
-        height: widget.height,
-        child: CustomPaint(
-          painter: BarChartPainter(
-            max: max(widget.data),
-            data: widget.data,
-            colors: widget.colors,
-            animation: animation.animate(animationController)
-          ),
-          size: Size(widget.width, widget.height),
-        )
-      )
-    ,);
+  List<String> _extractColors(List<EventData> data) {
+    List<String> result = [];
+    data.forEach((item){
+      result.add(item.color);
+    });
+    return result;
+  }
+
+  Widget _barChart(BuildContext context) {
+    return ValueListenableBuilder<BarChartStates>(
+      valueListenable: AuthProvider.of(context).appBloc.barChartStateNotifier,
+      builder: (context, value, _) {
+        if (value == BarChartStates.noData) {
+          return Text("No date selected. Please select dates."); // select date message
+        } else if(value == BarChartStates.dataFetching) {
+          return CircularProgressIndicator(); // circular progress indicator
+        } else {
+          animationController.reset();
+          animationController.forward();
+          List<EventData> data = AuthProvider.of(context).appBloc.eventDatas;
+          List<double> values = _extractValues(data);
+          return CustomPaint(
+            painter: BarChartPainter(
+              max: max(values),
+              colors: _extractColors(data),
+              data: values,
+              animation: animation.animate(animationController)
+            ),
+            size: Size(widget.width, widget.height),
+          );
+        }
+      }
+    );
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: _boxShadow(),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: barChartPainter(),
-          ),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.red
+        )
+      ),
+      child: FittedBox(
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height,
+          child: Center(child: _barChart(context))
+        )
+      )
     );
   }
 }

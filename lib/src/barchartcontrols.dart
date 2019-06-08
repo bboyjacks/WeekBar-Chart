@@ -1,131 +1,128 @@
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'appbloc.dart';
 import 'authprovider.dart';
 import 'daterange.dart';
-import 'eventdata.dart';
-import 'eventslabels.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dateselect.dart';
+
 
 class BarChartControls extends StatefulWidget {
-  BarChartControls(
-    {
-      this.calendarEventsData,
-      void Function(DateTime start, DateTime end) dateAction
-    }
-  ): dateAction = dateAction;
-  final List<EventData> calendarEventsData;
-  final void Function(DateTime start, DateTime end) dateAction;
-
   @override
   _BarChartControlsState createState() => _BarChartControlsState();
 }
 
 class _BarChartControlsState extends State<BarChartControls> {
-  DateTime startTime;
-  DateTime endTime;
+  ValueNotifier startValueNotifier;
+  ValueNotifier endValueNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime start;
+    DateTime end;
+    startValueNotifier = ValueNotifier(start);
+    endValueNotifier = ValueNotifier(end);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SafeArea(
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: EventsLabel(
-                  calendarEventsData: widget.calendarEventsData
-                ),
-              ),
-              Flexible(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    _controllButton(
-                      icon: Icon(FontAwesomeIcons.sun, color: Colors.white,),
-                      text: Text("Start", style: TextStyle(color: Colors.white),),
-                      context: context
-                    ),
-                    SizedBox(height: 20,),
-                    _controllButton(
-                      icon: Icon(FontAwesomeIcons.moon, color: Colors.white),
-                      text: Text("End", style: TextStyle(color: Colors.white),),
-                      context: context
-                    )
-                  ]
-                ),
-              )
-            ],
-          ),
+    return Column(
+      children: [
+        _calendarSelect(context,
+          valueNotifier: startValueNotifier,
+          buttonSubtext: "start",
+          label: "Start Date"
         ),
-      )
+        SizedBox(height: 20,),
+        _calendarSelect(context,
+          valueNotifier: endValueNotifier,
+          buttonSubtext: "end",
+          label: "End Date"
+        )
+      ]
     );
   }
 
-  void _selectDate(BuildContext context, Text text) async {
-    DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2016),
-      lastDate: DateTime(2020)
-    );
-    if(picked != null) {
-      if (text.data == "Start") {
-        startTime = picked;
-      } else if (text.data == "End") {
-        endTime = picked;
-      }
-
-      if (startTime != null && endTime != null) {
-        if (startTime.isAfter(endTime)) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Date Error"),
-                content: Text('''Start time is after end time. Make
-                  sure the start time is before end time'''),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Close"),
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                    },
-                  )
+  Widget _calendarSelect(BuildContext context, {
+    ValueNotifier valueNotifier,
+    String buttonSubtext,
+    String label
+  }) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue)
+      ),
+      width: width * 0.50,
+      height: height * 0.045,
+      child: Row(
+        children: <Widget>[
+          Expanded(child: DateSelect(valueNotifier: valueNotifier, name: label)),
+          Expanded(
+            child: RaisedButton(
+              padding: EdgeInsets.all(8.0),
+              color: Colors.blue,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Icon(FontAwesomeIcons.calendar),
+                  SizedBox(width: 4),
+                  Text(buttonSubtext)
                 ],
-              );
-            }
-          );
-        }
-        else {
-          AppBloc appBloc = AuthProvider.of(context).appBloc;
+              ),
+              onPressed: (){
+                _selectDate(context).then((endTime) {
+                  valueNotifier.value = endTime;
+                  _updateState(context);
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+    
+  void _updateState(BuildContext context) {
+    if (startValueNotifier.value != null && endValueNotifier.value != null) {
+      if (startValueNotifier.value.isAfter(endValueNotifier.value)) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // return object of type Dialog
+            return AlertDialog(
+              title: new Text("Error"),
+              content: new Text("The start date is after the end date."),
+            );
+          },
+        );
+      }
+      else {
+        ValueNotifier barChartStateNotifier = 
+          AuthProvider.of(context).appBloc.barChartStateNotifier;
+        barChartStateNotifier.value = BarChartStates.dataFetching;
+
+        AppBloc appBloc = AuthProvider.of(context).appBloc;
           appBloc.calendarEventsStreamSink.add(DateRange(
-            start: startTime,
-            end: endTime,
+            start: startValueNotifier.value,
+            end: endValueNotifier.value,
             auth: AuthProvider.of(context).auth
-          ));
-        }
+        ));
       }
     }
   }
 
-  Center _controllButton({Icon icon, Widget text, BuildContext context}) {
-    return Center(
-      child: RaisedButton(
-        color: Colors.blue,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              icon,
-              text
-            ],
-          ),
-        ),
-        onPressed: (){_selectDate(context, text);},
-      ),
+  Future<DateTime> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2018),
+      lastDate: DateTime(2020),
     );
+    return picked;
   }
 }

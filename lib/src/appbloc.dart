@@ -1,15 +1,21 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 
 import 'auth.dart';
 import 'daterange.dart';
 import 'eventdata.dart';
 
+enum BarChartStates {
+  noData,
+  dataFetching,
+  dataAvailable
+}
+
 class AppBloc {
-  List<EventData> result = [];
-  Map<String, String> colors = {};
+  ValueNotifier<BarChartStates> barChartStateNotifier;
+  List<EventData> eventDatas = [];
   StreamController<DateRange> calendarEventsStreamController =
       StreamController<DateRange>.broadcast();
-
   StreamSink<DateRange> get calendarEventsStreamSink =>
       calendarEventsStreamController.sink;
 
@@ -17,11 +23,11 @@ class AppBloc {
       StreamController<List<EventData>>.broadcast();
   StreamSink<List<EventData>> get _dataSeriesStreamSink =>
       dataSeriesStreamController.sink;
-  Stream<List<EventData>> get dataSeriesStream =>
-      dataSeriesStreamController.stream;
 
   AppBloc() {
+    barChartStateNotifier = ValueNotifier(BarChartStates.noData);
     calendarEventsStreamController.stream.listen(_mapDateRangeToDataSeriesList);
+    dataSeriesStreamController.stream.listen(_mapEventDataToResult);
   }
 
   void _mapDateRangeToDataSeriesList(DateRange dateRange) {
@@ -30,9 +36,14 @@ class AppBloc {
     });
   }
 
+  void _mapEventDataToResult(List<EventData> result) {
+    eventDatas.clear();
+    eventDatas = result;
+    barChartStateNotifier.value = BarChartStates.dataAvailable;
+  }
+
   void reset() {
-    result.clear();
-    colors.clear();
+    eventDatas.clear();
   }
 
   void dispose() {
